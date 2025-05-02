@@ -26,7 +26,10 @@ public class DriverFactory {
         return driver;
     }
 
-    public static void quitDriver(){
-        driver.quit();
+    public static void quitDriver() {
+        if(driver != null) {
+            driver.quit();
+            driver = null;
+        }
     }
 }
