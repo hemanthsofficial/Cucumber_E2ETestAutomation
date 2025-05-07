@@ -8,16 +8,17 @@ import java.io.IOException;
 import java.time.Duration;
 
 public class DriverFactory {
-    private static WebDriver driver;
+    private WebDriver driver;
+    private PropertyExtractor propertyExtractor;
 
-    public static WebDriver initDriver() throws IOException {
-        PropertyExtractor propertyExtractor = new PropertyExtractor();
-
-        if (propertyExtractor.extract("browser") == "chrome") {
+    public WebDriver initDriver() throws IOException {
+        propertyExtractor = new PropertyExtractor();
+        String browser = propertyExtractor.extract("browser");
+        if (browser.equalsIgnoreCase("chrome")) {
             System.setProperty("webdriver.chrome.driver", propertyExtractor.extract("chromepath"));
             driver = new ChromeDriver();
         }
-        if (propertyExtractor.extract("browser") == "edge") {
+        if (browser.equalsIgnoreCase("edge")) {
             System.setProperty("webdriver.edge.driver", propertyExtractor.extract("edgepath"));
             driver = new EdgeDriver();
         }
@@ -26,10 +27,9 @@ public class DriverFactory {
         return driver;
     }
 
-    public static void quitDriver() {
-        if(driver != null) {
+    public void quitDriver() {
+        if (driver != null) {
             driver.quit();
-            driver = null;
         }
     }
 }

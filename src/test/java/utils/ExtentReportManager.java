@@ -13,37 +13,41 @@ import java.nio.file.Files;
 
 public class ExtentReportManager {
     private WebDriver remoteDriver;
-    ExtentReports extentReports;
+    private AbstractComponents abstractComponents;
+    private ExtentReports extentReports;
+    private ExtentTest extentTest;
 
     public ExtentReportManager(WebDriver driver) {
         this.remoteDriver = driver;
+        this.abstractComponents = new AbstractComponents(remoteDriver);
     }
 
     public ExtentReports getExtentReports() {
-        ExtentSparkReporter extentSparkReporter = new ExtentSparkReporter("test-output/reports/extent-reports" + AbstractComponents.timestamp() + ".html");
-        extentReports = new ExtentReports();
-        extentReports.attachReporter(extentSparkReporter);
+        if (extentReports == null) {
+            ExtentSparkReporter extentSparkReporter = new ExtentSparkReporter("test-output/reports/ExtentReports_" + abstractComponents.timeStamp() + ".html");
+            extentReports = new ExtentReports();
+            extentReports.attachReporter(extentSparkReporter);
+        }
         return extentReports;
     }
 
     public void createTest(String testName) {
-        ExtentTest extentTest = getExtentReports().createTest(testName);
+        extentTest = getExtentReports().createTest(testName);
     }
 
     public ExtentTest getTest() {
-
+        return extentTest;
     }
 
     public void flushReport() {
         if (extentReports != null) {
             extentReports.flush();
-            extentReports = null;
         }
     }
 
     public String captureScreenshot(String testName) throws IOException {
         File source = ((TakesScreenshot) remoteDriver).getScreenshotAs(OutputType.FILE);
-        String screenshotPath = System.getProperty("user.dir") + "test-output/screenshots/" + testName + AbstractComponents.timestamp() + ".png";
+        String screenshotPath = System.getProperty("user.dir") + "/test-output/screenshots/" + testName + "_" + abstractComponents.timeStamp() + ".png";
         File destination = new File(screenshotPath);
         Files.copy(source.toPath(), destination.toPath());
         return screenshotPath;
